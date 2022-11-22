@@ -46,6 +46,7 @@ def load_data():
 # Hanya akan di run sekali
 pd_crs = load_data()
 
+
 if selected == "Tentang Dataset":
 
     st.write('''# Tentang Dataset''')
@@ -98,6 +99,53 @@ if selected == "Tentang Dataset":
     st.write("Source Code : [https://github.com/fadetul-f/cirhosis-app)")
 
 
+pd_crs.rename(columns = {"Sex": "gender"}, inplace=True)
+
+del(pd_crs['ID'], pd_crs['Status'], pd_crs['Drug'], pd_crs['N_Days'], pd_crs['Age'])
+pd_crs.head()
+
+# label_encoder object
+label_encoder = preprocessing.LabelEncoder()
+
+# Encode labels in column 'gender'.
+pd_crs['gender']= label_encoder.fit_transform(pd_crs['gender'])
+pd_crs['gender'].unique()
+
+# Encode labels in column 'Ascites'.
+pd_crs['Ascites']= label_encoder.fit_transform(pd_crs['Ascites'])
+pd_crs['Ascites'].unique()
+
+# Encode labels in column 'Hepatomegaly'.
+pd_crs['Hepatomegaly']= label_encoder.fit_transform(pd_crs['Hepatomegaly'])
+pd_crs['Hepatomegaly'].unique()
+
+# Encode labels in column 'Spiders'.
+pd_crs['Spiders']= label_encoder.fit_transform(pd_crs['Spiders'])
+pd_crs['Spiders'].unique()
+
+# Encode labels in column 'Edema'.
+pd_crs['Edema']= label_encoder.fit_transform(pd_crs['Edema'])
+pd_crs['Edema'].unique()
+
+scaler = MinMaxScaler()
+crs_new = pd.DataFrame(pd_crs, columns=['Bilirubin',	'Cholesterol',	'Albumin',	'Copper',	
+                                    'Alk_Phos',	'SGOT',	'Tryglicerides',	'Platelets',	'Prothrombin'])
+scaler.fit(crs_new)
+crs_new = scaler.transform(crs_new)
+
+crs_new = DataFrame(crs_new)
+pd_crs_stage = pd.DataFrame(pd_crs, columns = ['Stage'])
+del(pd_crs['Stage'], pd_crs['Bilirubin'], pd_crs['Cholesterol'], pd_crs['Albumin'], pd_crs['Copper'],
+pd_crs['Alk_Phos'], pd_crs['SGOT'], pd_crs['Tryglicerides'], pd_crs['Platelets'], pd_crs['Prothrombin'])
+
+pd_crs_new = pd.concat([pd_crs,crs_new], axis=1)
+
+pd_crs_new.rename(columns = {0: "Bilirubin", 1: "Cholesterol", 2: "Albumin", 3: "Copper", 
+                    4: "Alk_Phos", 5: "SGOT", 6: "Tryglicerides", 7: "Platelets", 
+                    8: "Prothrombin"}, inplace=True)
+
+data_crs = pd.concat([pd_crs_new,pd_crs_stage], axis=1)
+
 if selected == "Prediksi":
     _, col2, _ = st.columns([1, 2, 1])
     with col2:
@@ -126,62 +174,27 @@ if selected == "Prediksi":
             }
             masukan = pd.DataFrame(data, index=[0])
 
-            load_model=pickle.load(open('DecisionTree.pkl', 'rb'))
-            prediction = load_model.predict(masukan)
+            # memisahkan fitur dan label
+            feature=data_crs.iloc[:,0:14].values
+            label=data_crs.iloc[:,14].values
+            x_train,x_test,y_train,y_test=train_test_split(feature, label, test_size=0.3,random_state=0)
+            st.write("#### KNN")
+            classifier= KNeighborsClassifier(n_neighbors=5 )  
+            classifier.fit(x_train, y_train)
+            #lakukan prediksi
+            y_pred= classifier.predict(x_test)
+            knn=accuracy_score(y_test, y_pred)
+
+            #load_model=pickle.load(open('DecisionTree.pkl', 'rb'))
+            #prediction = load_model.predict(masukan)
+            prediction=classifier.predict(masukan)
 
             st.write('''#### Prediksi''')
-            stage = np.array([1, 2, 3, 4])
-            st.write(stage[prediction])
+            st.write(prediction)
 
 
 if selected == "Model":
     st.write("### Akurasi Model")
-    pd_crs.rename(columns = {"Sex": "gender"}, inplace=True)
-
-    del(pd_crs['ID'], pd_crs['Status'], pd_crs['Drug'], pd_crs['N_Days'], pd_crs['Age'])
-    pd_crs.head()
-
-    # label_encoder object
-    label_encoder = preprocessing.LabelEncoder()
-    
-    # Encode labels in column 'gender'.
-    pd_crs['gender']= label_encoder.fit_transform(pd_crs['gender'])
-    pd_crs['gender'].unique()
-
-    # Encode labels in column 'Ascites'.
-    pd_crs['Ascites']= label_encoder.fit_transform(pd_crs['Ascites'])
-    pd_crs['Ascites'].unique()
-
-    # Encode labels in column 'Hepatomegaly'.
-    pd_crs['Hepatomegaly']= label_encoder.fit_transform(pd_crs['Hepatomegaly'])
-    pd_crs['Hepatomegaly'].unique()
-
-    # Encode labels in column 'Spiders'.
-    pd_crs['Spiders']= label_encoder.fit_transform(pd_crs['Spiders'])
-    pd_crs['Spiders'].unique()
-
-    # Encode labels in column 'Edema'.
-    pd_crs['Edema']= label_encoder.fit_transform(pd_crs['Edema'])
-    pd_crs['Edema'].unique()
-
-    scaler = MinMaxScaler()
-    crs_new = pd.DataFrame(pd_crs, columns=['Bilirubin',	'Cholesterol',	'Albumin',	'Copper',	
-                                            'Alk_Phos',	'SGOT',	'Tryglicerides',	'Platelets',	'Prothrombin'])
-    scaler.fit(crs_new)
-    crs_new = scaler.transform(crs_new)
-
-    crs_new = DataFrame(crs_new)
-    pd_crs_stage = pd.DataFrame(pd_crs, columns = ['Stage'])
-    del(pd_crs['Stage'], pd_crs['Bilirubin'], pd_crs['Cholesterol'], pd_crs['Albumin'], pd_crs['Copper'],
-        pd_crs['Alk_Phos'], pd_crs['SGOT'], pd_crs['Tryglicerides'], pd_crs['Platelets'], pd_crs['Prothrombin'])
-
-    pd_crs_new = pd.concat([pd_crs,crs_new], axis=1)
-
-    pd_crs_new.rename(columns = {0: "Bilirubin", 1: "Cholesterol", 2: "Albumin", 3: "Copper", 
-                            4: "Alk_Phos", 5: "SGOT", 6: "Tryglicerides", 7: "Platelets", 
-                            8: "Prothrombin"}, inplace=True)
-
-    data_crs = pd.concat([pd_crs_new,pd_crs_stage], axis=1)
 
     # memisahkan fitur dan label
     feature=data_crs.iloc[:,0:14].values
