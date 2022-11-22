@@ -95,7 +95,7 @@ if selected == "Tentang Dataset":
 
     st.write('\n')
     st.write('\n')
-    st.write("Source Code : [https://github.com/fadetul-f/creditScore-app](https://github.com/fadetul-f/creditScore-app)")
+    st.write("Source Code : [https://github.com/fadetul-f/cirhosis-app)")
 
 
 if selected == "Prediksi":
