@@ -91,6 +91,7 @@ if selected == "Dataset":
     st.write('\n')
     st.write('\n')
     st.write("Source Code : https://github.com/fadetul-f/cirhosis-app")
+    st.write("link dataset : https://www.kaggle.com/datasets/fedesoriano/cirrhosis-prediction-dataset")
 
 if selected == "Prepocessing":
     nomalisasi = st.selectbox("Pilih tipe dari data yang akan di normalisasi",['Binary', 'Kategori', 'Numerik', 'Normalisasi semua'])
