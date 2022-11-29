@@ -348,14 +348,15 @@ if selected == "Model":
     dr=accuracy_score(y_test, pred2)
     st.info(dr)
 
-    fig = plt.figure()
-    fig.patch.set_facecolor('grey')
+    fig = plt.figure(figsize=(10, 5))
+    fig.patch.set_facecolor('silver')
     fig.patch.set_alpha(0.5)
     ax = fig.add_axes([0,0,1,1])
-    ax.patch.set_facecolor('white')
     ax.patch.set_alpha(0.4)
     ax.plot(['Naive Bayes', 'Random Forest', 'KNN', 'Decision Tree'],[akurasi, randomF, knn, dr], color='green')
     plt.show()
+    st.write('')
+    st.write('#### Grafik akurasi model')
     st.pyplot(fig)
 
 
