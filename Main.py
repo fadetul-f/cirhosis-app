@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 import pickle
 from streamlit_option_menu import option_menu
 from sklearn.metrics import accuracy_score
@@ -90,7 +91,6 @@ if selected == "Dataset":
     st.write('\n')
     st.write('\n')
     st.write("Source Code : https://github.com/fadetul-f/cirhosis-app")
-    st.write("link dataset : https://www.kaggle.com/datasets/fedesoriano/cirrhosis-prediction-dataset")
 
 if selected == "Prepocessing":
     nomalisasi = st.selectbox("Pilih tipe dari data yang akan di normalisasi",['Binary', 'Kategori', 'Numerik', 'Normalisasi semua'])
@@ -214,47 +214,51 @@ if selected == "Prediksi":
         st.header('Input Parameters')
 
     with st.form(key='my_form'):
-        jk = st.radio('Pilih Jenis Kelamin', ('Laki-laki', 'Perempuan'))
-        if jk == 'Laki-laki':
-            jenis = 1
-        else:
-            jenis = 0
-        ascites = st.radio('Ascites', ('Ada', 'Tidak'))
-        if ascites == 'Ada':
-            asc = 1
-        else:
-            asc = 0
-        hepa = st.radio('Hepatomegaly', ('Ada', 'Tidak'))
-        if hepa == 'Ada':
-            hp = 1
-        else:
-            hp = 0
-        spd = st.radio('Spiders', ('Ada', 'Tidak'))
-        if spd == 'Ada':
-            sp = 1
-        else:
-            sp = 0
-        ede = st.radio('Edema', ('Ada', 'Tidak', 'Teratasi'))
-        if ede == 'Ada':
-            EdeY = 1
-            EdeN = 0
-            EdeS = 0
-        elif ede == 'Tidak':
-            EdeY = 0
-            EdeN = 1
-            EdeS = 0
-        else:
-            EdeY = 0
-            EdeN = 0
-            EdeS = 1
-        blr = st.number_input('Bilirubin')
-        clt = st.number_input('Cholesterol')
-        albu = st.number_input('Albumin')
-        cho = st.number_input('Chopper')
-        alk = st.number_input('Alk_Phos')
-        sgot = st.number_input('SGOT')
-        tryg = st.number_input('Tryglicerides')
-        pla = st.number_input('Platelets')
+        col0, col1 = st.columns([1,1])
+        with col0:
+            jk = st.radio('Pilih Jenis Kelamin', ('Laki-laki', 'Perempuan'))
+            if jk == 'Laki-laki':
+                jenis = 1
+            else:
+                jenis = 0
+            ascites = st.radio('Ascites', ('Ada', 'Tidak'))
+            if ascites == 'Ada':
+                asc = 1
+            else:
+                asc = 0
+            hepa = st.radio('Hepatomegaly', ('Ada', 'Tidak'))
+            if hepa == 'Ada':
+                hp = 1
+            else:
+                hp = 0
+            spd = st.radio('Spiders', ('Ada', 'Tidak'))
+            if spd == 'Ada':
+                sp = 1
+            else:
+                sp = 0
+            ede = st.radio('Edema', ('Ada', 'Tidak', 'Teratasi'))
+            if ede == 'Ada':
+                EdeY = 1
+                EdeN = 0
+                EdeS = 0
+            elif ede == 'Tidak':
+                EdeY = 0
+                EdeN = 1
+                EdeS = 0
+            else:
+                EdeY = 0
+                EdeN = 0
+                EdeS = 1
+            blr = st.number_input('Bilirubin')
+            
+        with col1:
+            clt = st.number_input('Cholesterol')
+            albu = st.number_input('Albumin')
+            cho = st.number_input('Chopper')
+            alk = st.number_input('Alk_Phos')
+            sgot = st.number_input('SGOT')
+            tryg = st.number_input('Tryglicerides')
+            pla = st.number_input('Platelets')
         pro = st.number_input('Prothrombin')
         if st.form_submit_button('Check'):
             data = {'Prothrombin':pro, 'Platelets':pla,  'Tryglicerides':tryg,
@@ -343,6 +347,16 @@ if selected == "Model":
     pred2 = loaded_model.predict(x_test)
     dr=accuracy_score(y_test, pred2)
     st.info(dr)
+
+    fig = plt.figure()
+    fig.patch.set_facecolor('grey')
+    fig.patch.set_alpha(0.5)
+    ax = fig.add_axes([0,0,1,1])
+    ax.patch.set_facecolor('white')
+    ax.patch.set_alpha(0.4)
+    ax.plot(['Naive Bayes', 'Random Forest', 'KNN', 'Decision Tree'],[akurasi, randomF, knn, dr], color='green')
+    plt.show()
+    st.pyplot(fig)
 
 
 
